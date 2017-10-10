@@ -2,6 +2,7 @@ package com.company.controll.controller;
 
 import com.company.controll.entity.Department;
 import com.company.controll.repository.DepartmentRepository;
+import com.company.controll.repository.WorkerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -17,11 +18,13 @@ public class DepartmentController {
 
     @Autowired
     DepartmentRepository departmentRepository;
+    @Autowired
+    WorkerRepository workerRepository;
 
     //Создает новый департамент с учетом следующих правил:
     //1)только у Верхнего в иерархии департамента нет родительского
     //2)в системе не может быть двух одинаково названных департаментов
-    @RequestMapping(path = "/createDepartment",method = RequestMethod.POST)
+    @RequestMapping(path = "/create",method = RequestMethod.POST)
     public ResponseEntity<String> createDepartment(RequestEntity<Department> requestEntity){
         Department department = requestEntity.getBody();
         if (!validateHeadDepartment(department)) return ResponseEntity.status(HttpStatus.FAILED_DEPENDENCY).build();
@@ -31,13 +34,32 @@ public class DepartmentController {
     }
 
     //изменяет наименование департамента с учетом того что в системе нет департаментов с одинаковыми названиями
-    @RequestMapping(path = "/updateDepartment", method = RequestMethod.GET)
+    @RequestMapping(path = "/update", method = RequestMethod.GET)
     public ResponseEntity<String> updateDepartment(@RequestParam(value = "id") long id, @RequestParam(value = "name") String name) {
         if (!validateEqualsDepartment(name)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
         departmentRepository.getOne(id).setName(name);
         departmentRepository.flush();
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    //удаляет указанный департамент, при условии, что в нем нет сотрудников
+    @RequestMapping(path = "/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteDepartment(@RequestParam(value = "id") long id){
+        if (workerRepository.findAllByDepartment(departmentRepository.findOne(id)).isEmpty()){
+            departmentRepository.delete(id);
+            departmentRepository.flush();
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
+    }
+
+    
+
+
+
+
+
+
 
     @RequestMapping(path="/getAllDepartments", method = RequestMethod.GET)
     public @ResponseBody List<Department> getAllDepartment(){
