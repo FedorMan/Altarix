@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("api/worker")
 public class WorkerController {
-    @Autowired
+
     WorkerRepository workerRepository;
 }
