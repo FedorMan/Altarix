@@ -2,9 +2,13 @@ package com.company.controll.entity;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -20,6 +24,10 @@ public class Department {
     @ManyToOne(targetEntity = Department.class)
     private Department parentDepartment;
 
+    @JsonIgnore
+    @OneToMany(targetEntity = Employe.class, mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Employe> employes;
+
     public Department() {
     }
 
@@ -27,6 +35,21 @@ public class Department {
         this.name = name;
         this.createBy = createBy;
         this.parentDepartment = parentDepartment;
+    }
+
+    public Department(String name, LocalDate createBy, Department parentDepartment, Set<Employe> employes) {
+        this.name = name;
+        this.createBy = createBy;
+        this.parentDepartment = parentDepartment;
+        this.employes = employes;
+    }
+
+    public Set<Employe> getworkers() {
+        return employes;
+    }
+
+    public void setworkers(Set<Employe> employes) {
+        this.employes = employes;
     }
 
     public Long getId() {
@@ -59,5 +82,16 @@ public class Department {
 
     public void setParentDepartment(Department parentDepartment) {
         this.parentDepartment = parentDepartment;
+    }
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createBy=" + createBy +
+                ", parentDepartment=" + parentDepartment +
+                ", employes=" + employes +
+                '}';
     }
 }
