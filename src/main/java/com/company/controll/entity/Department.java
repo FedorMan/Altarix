@@ -23,9 +23,8 @@ public class Department {
     private LocalDate createBy;
     @ManyToOne(targetEntity = Department.class)
     private Department parentDepartment;
-
-    @JsonIgnore
     @OneToMany(targetEntity = Employe.class, mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Employe> employes;
 
     public Department() {

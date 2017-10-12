@@ -1,12 +1,14 @@
 package com.company.controll.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "workers")
-public class Worker {
+@Table(name = "employes")
+public class Employe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -29,15 +31,17 @@ public class Worker {
     @NotNull
     private double salary;
     @NotNull
-    @ManyToOne(targetEntity = Department.class)
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    @JsonIgnore
     private Department department;
     @NotNull
     private Boolean isMain;
 
-    public Worker() {
+    public Employe() {
     }
 
-    public Worker(String lastname, String firstname, String patronymic, String sex, LocalDate birthday, LocalDate startDate, LocalDate endDate, Position position, double salary, Department department, Boolean isMain) {
+    public Employe(String lastname, String firstname, String patronymic, String sex, LocalDate birthday, LocalDate startDate, LocalDate endDate, Position position, double salary, Department department, Boolean isMain) {
         this.lastname = lastname;
         this.firstname = firstname;
         this.patronymic = patronymic;
