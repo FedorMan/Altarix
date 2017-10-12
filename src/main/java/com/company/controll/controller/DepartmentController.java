@@ -4,7 +4,6 @@ import com.company.controll.entity.Department;
 import com.company.controll.entity.Employe;
 import com.company.controll.model.DepartamentInformation;
 import com.company.controll.repository.DepartmentRepository;
-import com.company.controll.repository.EmployeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -12,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -65,6 +65,22 @@ public class DepartmentController {
         }
         DepartamentInformation departamentInformation = new DepartamentInformation(department.getName(),department.getCreateBy(),mainEmploye,department.getworkers().size());
         return departamentInformation;
+    }
+
+    //Предоставление информации о департаментах, находящихся в
+    // непосредственном подчинении данного департамента (на уровень ниже).
+    @RequestMapping(path = "/downinformation", method = RequestMethod.GET)
+    public @ResponseBody List<DepartamentInformation> getDownInformation(@RequestParam(value = "id") long id){
+        List<Department> departments = departmentRepository.findAllByParentDepartmentId(id);
+        List<DepartamentInformation> departamentInformations = new ArrayList<>();
+        for(Department department : departments) {
+            Employe mainEmploye = null;
+            for (Employe e : department.getworkers()) {
+                if (e.getMain()) mainEmploye = e;
+            }
+            departamentInformations.add(new DepartamentInformation(department.getName(), department.getCreateBy(), mainEmploye, department.getworkers().size()));
+        }
+        return departamentInformations;
     }
 
     @RequestMapping(path="/all", method = RequestMethod.GET)
