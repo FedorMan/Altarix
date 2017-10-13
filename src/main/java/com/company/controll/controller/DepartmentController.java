@@ -100,11 +100,10 @@ public class DepartmentController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @RequestMapping(path = "/all", method = RequestMethod.GET)
-    public @ResponseBody
-    List<Department> getAllDepartment() {
-        List<Department> list = departmentRepository.findAll();
-        return list;
+    //Поиск департамента по наименованию.
+    @RequestMapping(path = "/findbyname", method = RequestMethod.GET)
+    public @ResponseBody Department findByName(@RequestParam(value = "name") String name){
+        return departmentRepository.findByName(name);
     }
 
     //проверить является ли добавляемый департамент верхним в иерархии
