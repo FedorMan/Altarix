@@ -43,11 +43,11 @@ public class Department {
         this.employes = employes;
     }
 
-    public Set<Employe> getworkers() {
+    public Set<Employe> getEmployes() {
         return employes;
     }
 
-    public void setworkers(Set<Employe> employes) {
+    public void setEmployes(Set<Employe> employes) {
         this.employes = employes;
     }
 

@@ -46,7 +46,7 @@ public class DepartmentController {
     //удаляет указанный департамент, при условии, что в нем нет сотрудников
     @RequestMapping(path = "/delete", method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@RequestParam(value = "id") long id) {
-        if (departmentRepository.getOne(id).getworkers().isEmpty()) {
+        if (departmentRepository.getOne(id).getEmployes().isEmpty()) {
             departmentRepository.delete(id);
             departmentRepository.flush();
             return ResponseEntity.status(HttpStatus.OK).build();
@@ -60,8 +60,8 @@ public class DepartmentController {
     @RequestMapping(path = "/information", method = RequestMethod.GET)
     public @ResponseBody DepartamentInformation getInformation(@RequestParam(value = "id") long id) {
         Department department = departmentRepository.getOne(id);
-        Optional<Employe> mainEmploye = department.getworkers().stream().filter(employe -> employe.getMain()).findFirst();
-        DepartamentInformation departamentInformation = new DepartamentInformation(department.getName(), department.getCreateBy(), mainEmploye.get(), department.getworkers().size());
+        Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
+        DepartamentInformation departamentInformation = new DepartamentInformation(department.getName(), department.getCreateBy(), mainEmploye.get(), department.getEmployes().size());
         return departamentInformation;
     }
 
@@ -72,11 +72,11 @@ public class DepartmentController {
         List<Department> departments = departmentRepository.findAllByParentDepartmentId(id);
         List<DepartamentInformation> departamentInformations = new ArrayList<>();
         for (Department department : departments) {
-            Optional<Employe> mainEmploye = department.getworkers().stream().filter(employe -> employe.getMain()).findFirst();
+            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
             departamentInformations.add(new DepartamentInformation(department.getName(),
                     department.getCreateBy(),
                     mainEmploye.isPresent() ? mainEmploye.get() : null,
-                    department.getworkers().size()));
+                    department.getEmployes().size()));
         }
         return departamentInformations;
     }
@@ -106,6 +106,14 @@ public class DepartmentController {
         return departmentRepository.findByName(name);
     }
 
+    //Получение информации о фонде заработной платы департамента
+    // (сумма зарплат всех сотрудников департамента).
+    @RequestMapping(path = "/salarydepartment", method = RequestMethod.GET)
+    public @ResponseBody Double getAllSalary(@RequestParam(value = "id") long id){
+        Department department = departmentRepository.getOne(id);
+        return department.getEmployes().stream().mapToDouble(value -> value.getSalary()).sum();
+    }
+
     //проверить является ли добавляемый департамент верхним в иерархии
     public boolean validateHeadDepartment(Department department) {
         List<Department> departmentList = departmentRepository.findAll();
@@ -130,11 +138,11 @@ public class DepartmentController {
         List<Long> idsDepartments = new ArrayList<>();
         for (Department department : departments) {
             idsDepartments.add(department.getId());
-            Optional<Employe> mainEmploye = department.getworkers().stream().filter(employe -> employe.getMain()).findFirst();
+            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
             departamentInformations.add(new DepartamentInformation(department.getName(),
                     department.getCreateBy(),
                     mainEmploye.isPresent() ? mainEmploye.get() : null,
-                    department.getworkers().size()));
+                    department.getEmployes().size()));
         }
         idsDepartments.stream().forEach(newId -> findAllInformationAboutDepartment(newId, departamentInformations));
     }
