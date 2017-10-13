@@ -114,6 +114,22 @@ public class DepartmentController {
         return department.getEmployes().stream().mapToDouble(value -> value.getSalary()).sum();
     }
 
+    //Получение информации о всех вышестоящих департаментах данного департамента.
+    @RequestMapping(path = "upallinformation", method = RequestMethod.GET)
+    public @ResponseBody List<DepartamentInformation> getUpAllInformation(@RequestParam(value = "id") long id){
+        List<DepartamentInformation> departamentInformations = new ArrayList<>();
+        Department department = departmentRepository.getOne(id);
+        while (department.getParentDepartment()!=null){
+            department = department.getParentDepartment();
+            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
+            departamentInformations.add(new DepartamentInformation(department.getName(),
+                    department.getCreateBy(),
+                    mainEmploye.isPresent() ? mainEmploye.get() : null,
+                    department.getEmployes().size()));
+        }
+        return departamentInformations;
+    }
+
     //проверить является ли добавляемый департамент верхним в иерархии
     public boolean validateHeadDepartment(Department department) {
         List<Department> departmentList = departmentRepository.findAll();
