@@ -58,8 +58,7 @@ public class DepartmentController {
     // Должна быть выдана информация о наименовании департамента,
     // дате создания, руководителе департамента и количестве сотрудников департамента.
     @RequestMapping(path = "/information", method = RequestMethod.GET)
-    public @ResponseBody
-    DepartamentInformation getInformation(@RequestParam(value = "id") long id) {
+    public @ResponseBody DepartamentInformation getInformation(@RequestParam(value = "id") long id) {
         Department department = departmentRepository.getOne(id);
         Optional<Employe> mainEmploye = department.getworkers().stream().filter(employe -> employe.getMain()).findFirst();
         DepartamentInformation departamentInformation = new DepartamentInformation(department.getName(), department.getCreateBy(), mainEmploye.get(), department.getworkers().size());
@@ -69,8 +68,7 @@ public class DepartmentController {
     //Предоставление информации о департаментах, находящихся в
     // непосредственном подчинении данного департамента (на уровень ниже).
     @RequestMapping(path = "/downinformation", method = RequestMethod.GET)
-    public @ResponseBody
-    List<DepartamentInformation> getDownInformation(@RequestParam(value = "id") long id) {
+    public @ResponseBody List<DepartamentInformation> getDownInformation(@RequestParam(value = "id") long id) {
         List<Department> departments = departmentRepository.findAllByParentDepartmentId(id);
         List<DepartamentInformation> departamentInformations = new ArrayList<>();
         for (Department department : departments) {
@@ -86,11 +84,20 @@ public class DepartmentController {
     //Предоставление информации о всех департаментах, находящихся в подчинении данного департамента
     // (все подчиненные департаменты. Для головного департамента - это все остальные департаменты).
     @RequestMapping(path = "/downallinformation", method = RequestMethod.GET)
-    public @ResponseBody
-    List<DepartamentInformation> getDownAllInformation(@RequestParam(value = "id") long id) {
+    public @ResponseBody List<DepartamentInformation> getDownAllInformation(@RequestParam(value = "id") long id) {
         List<DepartamentInformation> departamentInformations = new ArrayList<>();
         findAllInformationAboutDepartment(id, departamentInformations);
         return departamentInformations;
+    }
+
+    //Перенос департамента. Задание другого департамента, куда будет входить данный департамент.
+    @RequestMapping(path = "/transposition", method = RequestMethod.GET)
+    public ResponseEntity<String> transposition(@RequestParam(value = "id") long id, @RequestParam(value = "parentId") long parentId){
+        Department department = departmentRepository.getOne(id);
+        Department parentDepartment = departmentRepository.getOne(parentId);
+        department.setParentDepartment(parentDepartment);
+        departmentRepository.flush();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @RequestMapping(path = "/all", method = RequestMethod.GET)
