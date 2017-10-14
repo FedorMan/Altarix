@@ -82,9 +82,16 @@ public class EmployeController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @RequestMapping(path="/all", method = RequestMethod.GET)
-    public @ResponseBody List<Employe> getAllDepartment(){
-        List<Employe> list =employeRepository.findAll();
-        return list;
+    //Перевод всех сотрудников департамента в другой департамент.
+    @RequestMapping(path = "/transferdepartment", method = RequestMethod.GET)
+    public ResponseEntity<String> transferDepartment(@RequestParam(value = "idCurrent") long idCurrent, @RequestParam(value = "idDepartment") long idDepatment){
+        Department currentDepartment = departmentRepository.getOne(idCurrent);
+        Department department = departmentRepository.getOne(idDepatment);
+        currentDepartment.getEmployes().stream().forEach(employe -> employe.setDepartment(department));
+        employeRepository.flush();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+    
+
 }
