@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -57,7 +58,17 @@ public class EmployeController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    
+    //Увольнение сотрудника с указанием даты увольнения.
+    @RequestMapping(path = "/dismiss",method = RequestMethod.GET)
+    public ResponseEntity<String> dismissal(@RequestParam(value = "id") long id, @RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day){
+        Employe employe = employeRepository.getOne(id);
+        LocalDate endDate = LocalDate.of(year,month,day);
+        employe.setEndDate(endDate);
+        employeRepository.flush();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    //
 
     @RequestMapping(path="/all", method = RequestMethod.GET)
     public @ResponseBody List<Employe> getAllDepartment(){
