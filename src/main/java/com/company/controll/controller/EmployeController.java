@@ -8,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,6 +17,13 @@ import java.util.List;
 public class EmployeController {
     @Autowired
     EmployeRepository employeRepository;
+
+    //Получение списка сотрудников департамента.
+    @RequestMapping(path = "/getbydepartment", method = RequestMethod.GET)
+    public @ResponseBody List<Employe> getByDepartment(@RequestParam(value = "id") long id){
+        return employeRepository.findByDepartmentId(id);
+    }
+
 
     @RequestMapping(path = "/create",method = RequestMethod.POST)
     public ResponseEntity<String> create(RequestEntity<Employe> requestEntity){
