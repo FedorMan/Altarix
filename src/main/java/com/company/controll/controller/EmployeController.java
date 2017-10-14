@@ -32,6 +32,12 @@ public class EmployeController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    //Получение информации о сотруднике.
+    @RequestMapping(path = "/informationof", method = RequestMethod.GET)
+    public @ResponseBody Employe getInformationOf(@RequestParam(value = "id") long id){
+        return employeRepository.getOne(id);
+    }
+
     @RequestMapping(path="/all", method = RequestMethod.GET)
     public @ResponseBody List<Employe> getAllDepartment(){
         List<Employe> list =employeRepository.findAll();

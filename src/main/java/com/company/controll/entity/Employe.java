@@ -1,6 +1,8 @@
 package com.company.controll.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -8,6 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "employes")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Employe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
