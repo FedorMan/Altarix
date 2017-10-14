@@ -1,6 +1,8 @@
 package com.company.controll.controller;
 
+import com.company.controll.entity.Department;
 import com.company.controll.entity.Employe;
+import com.company.controll.repository.DepartmentRepository;
 import com.company.controll.repository.EmployeRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,9 @@ import java.util.List;
 @RequestMapping("api/employe")
 public class EmployeController {
     @Autowired
-    EmployeRepository employeRepository;
+    private EmployeRepository employeRepository;
+    @Autowired
+    private DepartmentRepository departmentRepository;
 
     //Получение списка сотрудников департамента.
     @RequestMapping(path = "/getbydepartment", method = RequestMethod.GET)
@@ -68,7 +72,15 @@ public class EmployeController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    //
+    //Перевод сотрудника из одного департамента в другой.
+    @RequestMapping(path = "/transfer", method = RequestMethod.GET)
+    public ResponseEntity<String> transfer(@RequestParam(value = "id") long id, @RequestParam(value = "idDepartment") long idDepatment){
+        Employe employe = employeRepository.getOne(id);
+        Department department = departmentRepository.getOne(idDepatment);
+        employe.setDepartment(department);
+        employeRepository.flush();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     @RequestMapping(path="/all", method = RequestMethod.GET)
     public @ResponseBody List<Employe> getAllDepartment(){

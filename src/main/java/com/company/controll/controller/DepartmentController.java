@@ -20,7 +20,7 @@ import java.util.Optional;
 public class DepartmentController {
 
     @Autowired
-    DepartmentRepository departmentRepository;
+    private DepartmentRepository departmentRepository;
 
     //Создает новый департамент с учетом следующих правил:
     //1)только у Верхнего в иерархии департамента нет родительского
