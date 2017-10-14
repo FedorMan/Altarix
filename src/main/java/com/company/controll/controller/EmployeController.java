@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("api/employe")
@@ -108,5 +109,10 @@ public class EmployeController {
     }
 
     //Поиск сотрудников по атрибутам (по дате рождения).
-
+    @RequestMapping(path = "/findbybirthday", method = RequestMethod.GET)
+    public @ResponseBody
+    List<Employe> findByBirthday(@RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day){
+        LocalDate date = LocalDate.of(year,month,day);
+        return employeRepository.findByBirthday(date).stream().filter(employe -> employe.getEndDate() == null).collect(Collectors.toList());
+    }
 }
