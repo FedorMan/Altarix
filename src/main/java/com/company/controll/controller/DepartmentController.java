@@ -60,7 +60,7 @@ public class DepartmentController {
     @RequestMapping(path = "/information", method = RequestMethod.GET)
     public @ResponseBody DepartamentInformation getInformation(@RequestParam(value = "id") long id) {
         Department department = departmentRepository.getOne(id);
-        Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
+        Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.isMain()).findFirst();
         DepartamentInformation departamentInformation = new DepartamentInformation(department.getName(), department.getCreateBy(), mainEmploye.get(), department.getEmployes().size());
         return departamentInformation;
     }
@@ -72,7 +72,7 @@ public class DepartmentController {
         List<Department> departments = departmentRepository.findAllByParentDepartmentId(id);
         List<DepartamentInformation> departamentInformations = new ArrayList<>();
         for (Department department : departments) {
-            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
+            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.isMain()).findFirst();
             departamentInformations.add(new DepartamentInformation(department.getName(),
                     department.getCreateBy(),
                     mainEmploye.isPresent() ? mainEmploye.get() : null,
@@ -121,7 +121,7 @@ public class DepartmentController {
         Department department = departmentRepository.getOne(id);
         while (department.getParentDepartment()!=null){
             department = department.getParentDepartment();
-            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
+            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.isMain()).findFirst();
             departamentInformations.add(new DepartamentInformation(department.getName(),
                     department.getCreateBy(),
                     mainEmploye.isPresent() ? mainEmploye.get() : null,
@@ -154,7 +154,7 @@ public class DepartmentController {
         List<Long> idsDepartments = new ArrayList<>();
         for (Department department : departments) {
             idsDepartments.add(department.getId());
-            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.getMain()).findFirst();
+            Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.isMain()).findFirst();
             departamentInformations.add(new DepartamentInformation(department.getName(),
                     department.getCreateBy(),
                     mainEmploye.isPresent() ? mainEmploye.get() : null,

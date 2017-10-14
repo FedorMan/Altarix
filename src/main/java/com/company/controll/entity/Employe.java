@@ -33,15 +33,14 @@ public class Employe {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "department_id")
-    @JsonIgnore
     private Department department;
     @NotNull
-    private Boolean isMain;
+    private Boolean main;
 
     public Employe() {
     }
 
-    public Employe(String lastname, String firstname, String patronymic, String sex, LocalDate birthday, LocalDate startDate, LocalDate endDate, Position position, double salary, Department department, Boolean isMain) {
+    public Employe(String lastname, String firstname, String patronymic, String sex, LocalDate birthday, LocalDate startDate, LocalDate endDate, Position position, double salary, Department department, Boolean main) {
         this.lastname = lastname;
         this.firstname = firstname;
         this.patronymic = patronymic;
@@ -52,7 +51,7 @@ public class Employe {
         this.position = position;
         this.salary = salary;
         this.department = department;
-        this.isMain = isMain;
+        this.main = main;
     }
 
     public Long getId() {
@@ -143,11 +142,11 @@ public class Employe {
         this.department = department;
     }
 
-    public Boolean getMain() {
-        return isMain;
+    public Boolean isMain() {
+        return main;
     }
 
     public void setMain(Boolean main) {
-        isMain = main;
+        this.main = main;
     }
 }

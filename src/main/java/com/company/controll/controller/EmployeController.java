@@ -24,7 +24,7 @@ public class EmployeController {
         return employeRepository.findByDepartmentId(id);
     }
 
-
+    //Создание сотрудника департамента.
     @RequestMapping(path = "/create",method = RequestMethod.POST)
     public ResponseEntity<String> create(RequestEntity<Employe> requestEntity){
         Employe employe = requestEntity.getBody();
