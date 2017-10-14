@@ -38,6 +38,27 @@ public class EmployeController {
         return employeRepository.getOne(id);
     }
 
+    //Редактирование сведений о сотруднике департамента.
+    @RequestMapping(path = "/update",method = RequestMethod.POST)
+    public ResponseEntity<String> update(RequestEntity<Employe> requestEmploye){
+        Employe newEmploye = requestEmploye.getBody();
+        Employe employe = employeRepository.getOne(newEmploye.getId());
+        employe.setFirstname(newEmploye.getFirstname());
+        employe.setLastname(newEmploye.getLastname());
+        employe.setPatronymic(newEmploye.getPatronymic());
+        employe.setBirthday(newEmploye.getBirthday());
+        employe.setPosition(newEmploye.getPosition());
+        employe.setSalary(newEmploye.getSalary());
+        employe.setMain(newEmploye.isMain());
+        employe.setStartDate(newEmploye.getStartDate());
+        employe.setEndDate(newEmploye.getEndDate());
+        employe.setSex(newEmploye.getSex());
+        employeRepository.flush();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    
+
     @RequestMapping(path="/all", method = RequestMethod.GET)
     public @ResponseBody List<Employe> getAllDepartment(){
         List<Employe> list =employeRepository.findAll();
