@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("api/employe")
@@ -25,13 +26,14 @@ public class EmployeController {
 
     //Получение списка сотрудников департамента.
     @RequestMapping(path = "/getbydepartment", method = RequestMethod.GET)
-    public @ResponseBody List<Employe> getByDepartment(@RequestParam(value = "id") long id){
+    public @ResponseBody
+    List<Employe> getByDepartment(@RequestParam(value = "id") long id) {
         return employeRepository.findByDepartmentId(id);
     }
 
     //Создание сотрудника департамента.
-    @RequestMapping(path = "/create",method = RequestMethod.POST)
-    public ResponseEntity<String> create(RequestEntity<Employe> requestEntity){
+    @RequestMapping(path = "/create", method = RequestMethod.POST)
+    public ResponseEntity<String> create(RequestEntity<Employe> requestEntity) {
         Employe employe = requestEntity.getBody();
         employeRepository.save(employe);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -39,13 +41,14 @@ public class EmployeController {
 
     //Получение информации о сотруднике.
     @RequestMapping(path = "/informationof", method = RequestMethod.GET)
-    public @ResponseBody Employe getInformationOf(@RequestParam(value = "id") long id){
+    public @ResponseBody
+    Employe getInformationOf(@RequestParam(value = "id") long id) {
         return employeRepository.getOne(id);
     }
 
     //Редактирование сведений о сотруднике департамента.
-    @RequestMapping(path = "/update",method = RequestMethod.POST)
-    public ResponseEntity<String> update(RequestEntity<Employe> requestEmploye){
+    @RequestMapping(path = "/update", method = RequestMethod.POST)
+    public ResponseEntity<String> update(RequestEntity<Employe> requestEmploye) {
         Employe newEmploye = requestEmploye.getBody();
         Employe employe = employeRepository.getOne(newEmploye.getId());
         employe.setFirstname(newEmploye.getFirstname());
@@ -63,10 +66,10 @@ public class EmployeController {
     }
 
     //Увольнение сотрудника с указанием даты увольнения.
-    @RequestMapping(path = "/dismiss",method = RequestMethod.GET)
-    public ResponseEntity<String> dismissal(@RequestParam(value = "id") long id, @RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day){
+    @RequestMapping(path = "/dismiss", method = RequestMethod.GET)
+    public ResponseEntity<String> dismissal(@RequestParam(value = "id") long id, @RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day) {
         Employe employe = employeRepository.getOne(id);
-        LocalDate endDate = LocalDate.of(year,month,day);
+        LocalDate endDate = LocalDate.of(year, month, day);
         employe.setEndDate(endDate);
         employeRepository.flush();
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -74,7 +77,7 @@ public class EmployeController {
 
     //Перевод сотрудника из одного департамента в другой.
     @RequestMapping(path = "/transfer", method = RequestMethod.GET)
-    public ResponseEntity<String> transfer(@RequestParam(value = "id") long id, @RequestParam(value = "idDepartment") long idDepatment){
+    public ResponseEntity<String> transfer(@RequestParam(value = "id") long id, @RequestParam(value = "idDepartment") long idDepatment) {
         Employe employe = employeRepository.getOne(id);
         Department department = departmentRepository.getOne(idDepatment);
         employe.setDepartment(department);
@@ -84,7 +87,7 @@ public class EmployeController {
 
     //Перевод всех сотрудников департамента в другой департамент.
     @RequestMapping(path = "/transferdepartment", method = RequestMethod.GET)
-    public ResponseEntity<String> transferDepartment(@RequestParam(value = "idCurrent") long idCurrent, @RequestParam(value = "idDepartment") long idDepatment){
+    public ResponseEntity<String> transferDepartment(@RequestParam(value = "idCurrent") long idCurrent, @RequestParam(value = "idDepartment") long idDepatment) {
         Department currentDepartment = departmentRepository.getOne(idCurrent);
         Department department = departmentRepository.getOne(idDepatment);
         currentDepartment.getEmployes().stream().forEach(employe -> employe.setDepartment(department));
@@ -92,6 +95,18 @@ public class EmployeController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    
+    //Получение информации о руководителе данного сотрудника
+    @RequestMapping(path = "/informationofmanager", method = RequestMethod.GET)
+    public @ResponseBody
+    Employe getInformationOfManager(@RequestParam(value = "id") long id) {
+        Employe employe = employeRepository.getOne(id);
+        if (employe.isMain() && employe.getDepartment().getParentDepartment() == null) return null;
+        Department department = employe.isMain() ? employe.getDepartment().getParentDepartment() : employe.getDepartment();
+        Optional<Employe> manager = department.getEmployes().stream().filter(e -> e.isMain()).findFirst();
+        return manager.isPresent() ? manager.get() : null;
+
+    }
+
+    //Поиск сотрудников по атрибутам (по дате рождения).
 
 }
