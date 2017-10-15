@@ -35,7 +35,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_CONFLICT, message = "Главный департамент уже имеется или департамент с таким именем уже создан")
     })
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public ResponseEntity create(RequestEntity<Department> requestEntity) {
+    public ResponseEntity<String> create(RequestEntity<Department> requestEntity) {
         Department department = requestEntity.getBody();
         if (!validateHeadDepartment(department) || !validateEqualsDepartment(department.getName()))
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -52,7 +52,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_CONFLICT, message = "Департамент с таким именем уже создан")
     })
     @RequestMapping(path = "/update", method = RequestMethod.GET)
-    public ResponseEntity update(@RequestParam(value = "id") long id, @RequestParam(value = "name") String name) {
+    public ResponseEntity<String> update(@RequestParam(value = "id") long id, @RequestParam(value = "name") String name) {
         if (!validateEqualsDepartment(name)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
         departmentRepository.getOne(id).setName(name);
         departmentRepository.flush();
@@ -67,7 +67,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_CONFLICT, message = "В департаменте есть сотрудники")
     })
     @RequestMapping(path = "/delete", method = RequestMethod.DELETE)
-    public ResponseEntity delete(@RequestParam(value = "id") long id) {
+    public ResponseEntity<String> delete(@RequestParam(value = "id") long id) {
         if (departmentRepository.getOne(id).getEmployes().isEmpty()) {
             departmentRepository.delete(id);
             departmentRepository.flush();
@@ -85,7 +85,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/information", method = RequestMethod.GET)
-    public ResponseEntity getInformation(@RequestParam(value = "id") long id) {
+    public ResponseEntity<DepartamentInformation> getInformation(@RequestParam(value = "id") long id) {
         try {
             Department department = departmentRepository.getOne(id);
             Optional<Employe> mainEmploye = department.getEmployes().stream().filter(employe -> employe.isMain()).findFirst();
@@ -106,7 +106,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/subordinates", method = RequestMethod.GET)
-    public ResponseEntity getSubordinateDepartments(@RequestParam(value = "id") long id) {
+    public ResponseEntity<List<DepartamentInformation>> getSubordinateDepartments(@RequestParam(value = "id") long id) {
         try {
             Department department = departmentRepository.getOne(id);
         } catch (EntityNotFoundException e) {
@@ -132,7 +132,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/allsubordinates", method = RequestMethod.GET)
-    public ResponseEntity getAllSubordinateDepartments(@RequestParam(value = "id") long id) {
+    public ResponseEntity<List<DepartamentInformation>> getAllSubordinateDepartments(@RequestParam(value = "id") long id) {
         try {
             Department department = departmentRepository.getOne(id);
         } catch (EntityNotFoundException e) {
@@ -151,7 +151,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/transposition", method = RequestMethod.GET)
-    public ResponseEntity transposition(@RequestParam(value = "id") long id, @RequestParam(value = "parentId") long parentId) {
+    public ResponseEntity<String> transposition(@RequestParam(value = "id") long id, @RequestParam(value = "parentId") long parentId) {
         try {
             Department department = departmentRepository.getOne(id);
             Department parentDepartment = departmentRepository.getOne(parentId);
@@ -171,7 +171,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/find", method = RequestMethod.GET)
-    public ResponseEntity findByName(@RequestParam(value = "name") String name) {
+    public ResponseEntity<Department> findByName(@RequestParam(value = "name") String name) {
         Department department = departmentRepository.findByName(name);
         if (department == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
         return new ResponseEntity(department, HttpStatus.OK);
@@ -185,7 +185,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/salary", method = RequestMethod.GET)
-    public ResponseEntity getSalaryDepartment(@RequestParam(value = "id") long id) {
+    public ResponseEntity<Double> getSalaryDepartment(@RequestParam(value = "id") long id) {
         try {
             Department department = departmentRepository.getOne(id);
             double sallary = department.getEmployes().stream().mapToDouble(value -> value.getSalary()).sum();
@@ -203,7 +203,7 @@ public class DepartmentController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "superordinate", method = RequestMethod.GET)
-    public ResponseEntity getSuperordinateDepartments(@RequestParam(value = "id") long id) {
+    public ResponseEntity<List<DepartamentInformation>> getSuperordinateDepartments(@RequestParam(value = "id") long id) {
         try {
             List<DepartamentInformation> departamentInformations = new ArrayList<>();
             Department department = departmentRepository.getOne(id);

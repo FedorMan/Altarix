@@ -40,7 +40,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/department", method = RequestMethod.GET)
-    public ResponseEntity getByDepartment(@RequestParam(value = "id") long id) {
+    public ResponseEntity<List<Employe>> getByDepartment(@RequestParam(value = "id") long id) {
         try {
             Department department = departmentRepository.getOne(id);
             return new ResponseEntity(employeRepository.findByDepartmentId(id), HttpStatus.OK);
@@ -56,7 +56,7 @@ public class EmployeController {
             @ApiResponse(code = SC_CREATED, message = "Сотрудник создан"),
     })
     @RequestMapping(path = "/create", method = RequestMethod.POST)
-    public ResponseEntity create(RequestEntity<Employe> requestEntity) {
+    public ResponseEntity<String> create(RequestEntity<Employe> requestEntity) {
         Employe employe = requestEntity.getBody();
         employeRepository.save(employe);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -70,7 +70,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Сотрудник не  найден")
     })
     @RequestMapping(path = "/information", method = RequestMethod.GET)
-    public ResponseEntity getInformation(@RequestParam(value = "id") long id) {
+    public ResponseEntity<Employe> getInformation(@RequestParam(value = "id") long id) {
         try {
             return new ResponseEntity(employeRepository.getOne(id), HttpStatus.OK);
         }catch (EntityNotFoundException e) {
@@ -86,7 +86,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Сотрудник не  найден")
     })
     @RequestMapping(path = "/update", method = RequestMethod.POST)
-    public ResponseEntity update(RequestEntity<Employe> requestEmploye) {
+    public ResponseEntity<String> update(RequestEntity<Employe> requestEmploye) {
         try {
             Employe newEmploye = requestEmploye.getBody();
             Employe employe = employeRepository.getOne(newEmploye.getId());
@@ -115,7 +115,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Сотрудник не  найден")
     })
     @RequestMapping(path = "/dismiss", method = RequestMethod.GET)
-    public ResponseEntity dismiss(@RequestParam(value = "id") long id, @RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day) {
+    public ResponseEntity<String> dismiss(@RequestParam(value = "id") long id, @RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day) {
         try {
             Employe employe = employeRepository.getOne(id);
             LocalDate endDate = LocalDate.of(year, month, day);
@@ -135,7 +135,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Сотрудник или департамент не найден")
     })
     @RequestMapping(path = "/transfer", method = RequestMethod.GET)
-    public ResponseEntity transfer(@RequestParam(value = "id") long id, @RequestParam(value = "idDepartment") long idDepatment) {
+    public ResponseEntity<String> transfer(@RequestParam(value = "id") long id, @RequestParam(value = "idDepartment") long idDepatment) {
         try {
             Employe employe = employeRepository.getOne(id);
             Department department = departmentRepository.getOne(idDepatment);
@@ -155,7 +155,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Департамент не найден")
     })
     @RequestMapping(path = "/transferall", method = RequestMethod.GET)
-    public ResponseEntity transferDepartment(@RequestParam(value = "idCurrent") long idCurrent, @RequestParam(value = "idDepartment") long idDepatment) {
+    public ResponseEntity<String > transferDepartment(@RequestParam(value = "idCurrent") long idCurrent, @RequestParam(value = "idDepartment") long idDepatment) {
         try {
             Department currentDepartment = departmentRepository.getOne(idCurrent);
             Department department = departmentRepository.getOne(idDepatment);
@@ -175,7 +175,7 @@ public class EmployeController {
             @ApiResponse(code = SC_NOT_FOUND, message = "Сотрудник не найден")
     })
     @RequestMapping(path = "/manager", method = RequestMethod.GET)
-    public ResponseEntity getInformationOfManager(@RequestParam(value = "id") long id) {
+    public ResponseEntity<Employe> getInformationOfManager(@RequestParam(value = "id") long id) {
         try {
             Employe employe = employeRepository.getOne(id);
             if (employe.isMain() && employe.getDepartment().getParentDepartment() == null) return new ResponseEntity(null,HttpStatus.OK);
@@ -195,7 +195,7 @@ public class EmployeController {
             @ApiResponse(code = SC_OK, message = "Список возвращен"),
     })
     @RequestMapping(path = "/find", method = RequestMethod.GET)
-    public ResponseEntity findByBirthday(@RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day){
+    public ResponseEntity<List<Employe>> findByBirthday(@RequestParam(value = "year") int year, @RequestParam(value = "month") int month, @RequestParam(value = "day") int day){
         LocalDate date = LocalDate.of(year,month,day);
         return new ResponseEntity(employeRepository.findByBirthday(date).stream().filter(employe -> employe.getEndDate() == null).collect(Collectors.toList()),HttpStatus.OK);
     }
