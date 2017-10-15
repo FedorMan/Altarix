@@ -13,10 +13,8 @@ public class ChangeDepartament {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotNull
-    private Long idDepartment;
-    @NotNull
+    private Long departmentId;
     private String oldName;
-    @NotNull
     private Long oldParentDepartmentId;
     private String newName;
     private Long newParentDepartmentId;
@@ -26,8 +24,8 @@ public class ChangeDepartament {
     public ChangeDepartament() {
     }
 
-    public ChangeDepartament(Long idDepartment, String oldName, Long oldParentDepartmentId, String newName, Long newParentDepartmentId, LocalDateTime time) {
-        this.idDepartment = idDepartment;
+    public ChangeDepartament(Long departmentId, String oldName, Long oldParentDepartmentId, String newName, Long newParentDepartmentId, LocalDateTime time) {
+        this.departmentId = departmentId;
         this.oldName = oldName;
         this.oldParentDepartmentId = oldParentDepartmentId;
         this.newName = newName;
@@ -43,12 +41,12 @@ public class ChangeDepartament {
         this.id = id;
     }
 
-    public Long getIdDepartment() {
-        return idDepartment;
+    public Long getDepartmentId() {
+        return departmentId;
     }
 
-    public void setIdDepartment(Long idDepartment) {
-        this.idDepartment = idDepartment;
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 
     public String getOldName() {

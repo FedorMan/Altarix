@@ -4,6 +4,7 @@ package com.company.controll.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "departments")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","employes"})
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,8 +27,9 @@ public class Department {
     @Type(type="org.hibernate.type.LocalDateType")
     private LocalDate createBy;
     @ManyToOne(targetEntity = Department.class)
+    @JsonIgnore
     private Department parentDepartment;
-    @OneToMany(targetEntity = Employe.class, mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = Employe.class, mappedBy = "department", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Employe> employes;
 
     public Department() {
@@ -82,6 +84,7 @@ public class Department {
         return parentDepartment;
     }
 
+    @JsonProperty
     public void setParentDepartment(Department parentDepartment) {
         this.parentDepartment = parentDepartment;
     }

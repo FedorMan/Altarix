@@ -3,6 +3,7 @@ package com.company.controll.entity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -40,6 +41,7 @@ public class Employe {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "department_id")
+    @JsonIgnore
     private Department department;
     @NotNull
     private Boolean main;
@@ -141,10 +143,12 @@ public class Employe {
         this.salary = salary;
     }
 
+    @JsonIgnore
     public Department getDepartment() {
         return department;
     }
 
+    @JsonProperty
     public void setDepartment(Department department) {
         this.department = department;
     }

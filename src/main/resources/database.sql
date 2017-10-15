@@ -27,10 +27,17 @@ CREATE TABLE employes(
 
 CREATE TABLE history_departments(
   id BIGINT PRIMARY KEY,
-  id_department BIGINT NOT NULL,
-  old_name VARCHAR(100) NOT NULL,
-  old_parent_department_id BIGINT NOT NULL,
+  department_id BIGINT NOT NULL,
+  old_name VARCHAR(100),
+  old_parent_department_id BIGINT,
   new_name VARCHAR(100),
   new_parent_department_id BIGINT,
+  time DATE NOT NULL
+);
+
+CREATE TABLE salary_departments(
+  id BIGINT PRIMARY KEY,
+  department_id BIGINT NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
+  salary DOUBLE PRECISION NOT NULL,
   time DATE NOT NULL
 );

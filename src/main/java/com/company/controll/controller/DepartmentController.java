@@ -45,8 +45,8 @@ public class DepartmentController {
         if (!validateHeadDepartment(department) || !validateEqualsDepartment(department.getName()))
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         departmentRepository.save(department);
-        ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),department.getName(),
-                department.getParentDepartment().getId(),null,null, LocalDateTime.now());
+        ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),null,
+                null,department.getName(),department.getParentDepartment().getId(), LocalDateTime.now());
         changeDepartmentRepository.save(changeDepartament);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -62,13 +62,17 @@ public class DepartmentController {
     @RequestMapping(path = "/update", method = RequestMethod.GET)
     public ResponseEntity<String> update(@RequestParam(value = "id") long id, @RequestParam(value = "name") String name) {
         if (!validateEqualsDepartment(name)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        Department department = departmentRepository.getOne(id);
+        try{
+            Department department = departmentRepository.getOne(id);
         ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),department.getName(),
-                department.getParentDepartment().getId(),name,null, LocalDateTime.now());
+                department.getParentDepartment().getId(),name,department.getParentDepartment().getId(), LocalDateTime.now());
         department.setName(name);
         departmentRepository.flush();
         changeDepartmentRepository.save(changeDepartament);
         return ResponseEntity.status(HttpStatus.OK).build();
+        }catch (EntityNotFoundException e) {
+            return new ResponseEntity("Департамент не найден", HttpStatus.NOT_FOUND);
+        }
     }
 
     @ApiOperation(value = "Удалить департамент",
@@ -80,12 +84,16 @@ public class DepartmentController {
     })
     @RequestMapping(path = "/delete", method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@RequestParam(value = "id") long id) {
-        if (departmentRepository.getOne(id).getEmployes().isEmpty()) {
-            departmentRepository.delete(id);
-            departmentRepository.flush();
-            return ResponseEntity.status(HttpStatus.OK).build();
+        try {
+            if (departmentRepository.getOne(id).getEmployes().isEmpty()) {
+                departmentRepository.delete(id);
+                departmentRepository.flush();
+                return ResponseEntity.status(HttpStatus.OK).build();
+            }
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity("Департамент не найден", HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ApiOperation(value = "Просмотр сведений о департаменте. ",
@@ -168,7 +176,7 @@ public class DepartmentController {
             Department department = departmentRepository.getOne(id);
             Department parentDepartment = departmentRepository.getOne(parentId);
             ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),department.getName(),
-                    department.getParentDepartment().getId(),null,parentDepartment.getId(), LocalDateTime.now());
+                    department.getParentDepartment().getId(),department.getName(),parentDepartment.getId(), LocalDateTime.now());
             department.setParentDepartment(parentDepartment);
             departmentRepository.flush();
             changeDepartmentRepository.save(changeDepartament);
