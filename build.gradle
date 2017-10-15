@@ -48,4 +48,7 @@ dependencies {
 	// https://mvnrepository.com/artifact/io.springfox/springfox-swagger-ui
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
 
+	// https://mvnrepository.com/artifact/org.hibernate/hibernate-java8
+	compile group: 'org.hibernate', name: 'hibernate-java8', version: '5.0.1.Final'
+
 }

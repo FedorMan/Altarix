@@ -3,6 +3,8 @@ package com.company.controll.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "departments")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,8 +23,10 @@ public class Department {
     @NotNull
     private String name;
     @NotNull
+    @Type(type="org.hibernate.type.LocalDateType")
     private LocalDate createBy;
     @ManyToOne(targetEntity = Department.class)
+    @JsonIgnore
     private Department parentDepartment;
     @OneToMany(targetEntity = Employe.class, mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore

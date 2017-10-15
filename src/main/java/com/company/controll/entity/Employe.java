@@ -3,6 +3,7 @@ package com.company.controll.entity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,9 +25,12 @@ public class Employe {
     @NotNull
     private String sex;
     @NotNull
+    @Type(type="org.hibernate.type.LocalDateType")
     private LocalDate birthday;
     @NotNull
+    @Type(type="org.hibernate.type.LocalDateType")
     private LocalDate startDate;
+    @Type(type="org.hibernate.type.LocalDateType")
     private LocalDate endDate;
     @NotNull
     @OneToOne(targetEntity = Position.class)
