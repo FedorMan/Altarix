@@ -26,10 +26,8 @@ public class Department {
     @Type(type="org.hibernate.type.LocalDateType")
     private LocalDate createBy;
     @ManyToOne(targetEntity = Department.class)
-    @JsonIgnore
     private Department parentDepartment;
     @OneToMany(targetEntity = Employe.class, mappedBy = "department", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
     private Set<Employe> employes;
 
     public Department() {

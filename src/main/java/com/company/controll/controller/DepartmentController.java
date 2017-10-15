@@ -1,8 +1,10 @@
 package com.company.controll.controller;
 
+import com.company.controll.entity.ChangeDepartament;
 import com.company.controll.entity.Department;
 import com.company.controll.entity.Employe;
 import com.company.controll.model.DepartamentInformation;
+import com.company.controll.repository.ChangeDepartmentRepository;
 import com.company.controll.repository.DepartmentRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +28,8 @@ public class DepartmentController {
 
     @Autowired
     private DepartmentRepository departmentRepository;
+    @Autowired
+    private ChangeDepartmentRepository changeDepartmentRepository;
 
     @ApiOperation(value = "Создать департамент",
             notes = "Только у Верхнего в иерархии департамента нет родительского." +
@@ -40,6 +45,9 @@ public class DepartmentController {
         if (!validateHeadDepartment(department) || !validateEqualsDepartment(department.getName()))
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         departmentRepository.save(department);
+        ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),department.getName(),
+                department.getParentDepartment().getId(),null,null, LocalDateTime.now());
+        changeDepartmentRepository.save(changeDepartament);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -54,8 +62,12 @@ public class DepartmentController {
     @RequestMapping(path = "/update", method = RequestMethod.GET)
     public ResponseEntity<String> update(@RequestParam(value = "id") long id, @RequestParam(value = "name") String name) {
         if (!validateEqualsDepartment(name)) return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        departmentRepository.getOne(id).setName(name);
+        Department department = departmentRepository.getOne(id);
+        ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),department.getName(),
+                department.getParentDepartment().getId(),name,null, LocalDateTime.now());
+        department.setName(name);
         departmentRepository.flush();
+        changeDepartmentRepository.save(changeDepartament);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -155,8 +167,11 @@ public class DepartmentController {
         try {
             Department department = departmentRepository.getOne(id);
             Department parentDepartment = departmentRepository.getOne(parentId);
+            ChangeDepartament changeDepartament = new ChangeDepartament(department.getId(),department.getName(),
+                    department.getParentDepartment().getId(),null,parentDepartment.getId(), LocalDateTime.now());
             department.setParentDepartment(parentDepartment);
             departmentRepository.flush();
+            changeDepartmentRepository.save(changeDepartament);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (EntityNotFoundException e) {
             return new ResponseEntity("Департамент не найден", HttpStatus.NOT_FOUND);

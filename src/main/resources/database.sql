@@ -1,26 +1,36 @@
 CREATE TABLE departments(
   id BIGINT PRIMARY KEY,
-  name VARCHAR(100),
-  create_by DATE,
+  name VARCHAR(100) NOT NULL,
+  create_by DATE NOT NULL,
   parent_department_id BIGINT REFERENCES departments(id)
 );
 
 CREATE TABLE positions(
   id BIGINT PRIMARY KEY,
-  lastname VARCHAR(50)
+  lastname VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE employes(
   id BIGINT PRIMARY KEY,
-  lastname VARCHAR(30),
-  firstname VARCHAR(30),
-  patronymic VARCHAR(30),
-  sex VARCHAR(5),
-  birthday DATE,
-  start_date DATE,
+  lastname VARCHAR(30) NOT NULL,
+  firstname VARCHAR(30) NOT NULL,
+  patronymic VARCHAR(30) NOT NULL,
+  sex VARCHAR(5) NOT NULL,
+  birthday DATE NOT NULL,
+  start_date DATE NOT NULL,
   end_date DATE,
-  position_id BIGINT REFERENCES positions(id),
-  salary DOUBLE PRECISION,
-  department_id BIGINT REFERENCES departments(id),
+  position_id BIGINT NOT NULL REFERENCES positions(id),
+  salary DOUBLE PRECISION NOT NULL,
+  department_id BIGINT NOT NULL REFERENCES departments(id),
   main BOOLEAN
+);
+
+CREATE TABLE history_departments(
+  id BIGINT PRIMARY KEY,
+  id_department BIGINT NOT NULL,
+  old_name VARCHAR(100) NOT NULL,
+  old_parent_department_id BIGINT NOT NULL,
+  new_name VARCHAR(100),
+  new_parent_department_id BIGINT,
+  time DATE NOT NULL
 );
