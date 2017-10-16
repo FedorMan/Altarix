@@ -80,6 +80,7 @@ public class Department {
         this.createBy = createBy;
     }
 
+    @JsonIgnore
     public Department getParentDepartment() {
         return parentDepartment;
     }
